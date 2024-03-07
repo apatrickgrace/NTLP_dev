@@ -1689,6 +1689,8 @@ CONTAINS
       include 'mpif.h' 
       integer :: values(8)
       integer :: idx,ierr
+      integer :: N,kk
+      real :: my_dz
 
       !Create the seed for the random number generator:
       call date_and_time(VALUES=values)
@@ -1708,15 +1710,37 @@ CONTAINS
       nullify(part,first_particle)
       
 
+      if (inewpart == 8) then
+              !Code for particle grid goes here
+
+               !Need to ensure that this is an integer.
+                N = numpart/(nnz-1)
+                my_dz = zl/nnz
+                
+                do kk=1,nnz-1
+                        
+                        particle_height = kk*my_dz
+                        
+                        !Loops over all particles that are placed at a height given by particle_height
+                        do idx=N*(kk-1)+1,kk*N
+
+                                call new_particle(idx,myid)
+                                ngidx = ngidx + 1
+                     
+                        end do
+
+                end do
+      else
+
       do idx=1,numpart
 
          ! Call new_particle, which creates a new particle basd on some strategy dictated by inewpart
          call new_particle(idx,myid)
 
-
       ngidx = ngidx + 1
       end do
 
+      endif
 
       partTsrc = 0.0
       partTsrc_t = 0.0
@@ -2162,7 +2186,7 @@ CONTAINS
       m_s = radius_init**3*pi2*2.0/3.0*rhow*Sal  !Using the salinity specified in params.in
 
       call create_particle(xp_init,vp_init,Tp_init,m_s,kappas_init,mult_init,radius_init,ngidx,procidx)
-   !Made a comment
+   
 
 
 
@@ -2255,7 +2279,19 @@ CONTAINS
          vp_init(3) = ran2(iseed)*4.0
 
          call create_particle(xp_init,vp_init,Tp_init,m_s,kappas_init,mult_init,rad_init,ngidx,procidx) 
+ 
+   elseif (inewpart==8) then  !Simple: properties as in params.in, randomly located in domain
+
+      xv = xmin
+      yv = ymin
+      zv = particle_height
       
+      xp_init = (/xv,yv,zv/) 
+
+      m_s = radius_init**3*pi2*2.0/3.0*rhow*Sal  !Using the salinity specified in params.in
+
+      call create_particle(xp_init,vp_init,Tp_init,m_s,kappas_init,mult_init,radius_init,ngidx,procidx)
+   
 
    end if
 

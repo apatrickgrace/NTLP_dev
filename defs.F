@@ -31,6 +31,7 @@ c
       real :: meanRH,varRH
       real :: Swall,nprime
       real :: dvdr,hurr_rad
+      real :: particle_height
       integer :: isfc(nscl)
 
       !Radiation parameters
