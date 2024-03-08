@@ -3817,7 +3817,7 @@ CONTAINS
    part => first_particle
    do while (associated(part))
       
-      if (mod(part%pidx,100) .eq. 0) then
+      if (mod(part%pidx,50) .eq. 0) then
           write(ntraj,'(2i,12e15.6)') part%pidx,part%procidx,time,part%xp(1),part%xp(2),part%xp(3),part%vp(1),part%vp(2),part%vp(3), &
                   part%uf(1),part%uf(2),part%uf(3),part%xpinit(3)
       end if
