@@ -1711,13 +1711,14 @@ CONTAINS
       
 
       if (inewpart == 8) then
-              !Code for particle grid goes here
+              !Code for particle sheet case goes here
 
-               !Need to ensure that this is an integer.
-                N = numpart/(nnz-1)
+              !Divide the total number of particles associated with this processor into N "sheets"
+              !The premise for this case is that N particles are initialized in a sheet at a specific height.
+                N = (numpart/nnz)
                 my_dz = zl/nnz
                 
-                do kk=1,nnz-1
+                do kk=1,nnz
                         
                         particle_height = kk*my_dz
                         
@@ -2280,15 +2281,17 @@ CONTAINS
 
          call create_particle(xp_init,vp_init,Tp_init,m_s,kappas_init,mult_init,rad_init,ngidx,procidx) 
  
-   elseif (inewpart==8) then  !Simple: properties as in params.in, randomly located in domain
+   elseif (inewpart==8) then  !Arranges the particles in sheets at heights equal to particle_height with randomized x-y location.
+           !This case was originially formulated to estimate a profile of the turbulence de-correlation timescale along the particle
+           !trajectory
 
-      xv = xmin
-      yv = ymin
+      xv = ran2(iseed)*(xmax-xmin) + xmin
+      yv = ran2(iseed)*(ymax-ymin) + ymin
       zv = particle_height
       
       xp_init = (/xv,yv,zv/) 
 
-      m_s = radius_init**3*pi2*2.0/3.0*rhow*Sal  !Using the salinity specified in params.in
+      m_s = 0*radius_init**3*pi2*2.0/3.0*rhow*Sal  !Using the salinity specified in params.in
 
       call create_particle(xp_init,vp_init,Tp_init,m_s,kappas_init,mult_init,radius_init,ngidx,procidx)
    
