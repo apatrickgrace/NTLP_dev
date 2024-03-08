@@ -80,13 +80,13 @@ module particles
   real :: hist_numact(histbins+2)
   real :: bins_numact(histbins+2)
 
-  !REMEMBER: IF ADDING ANYTHING, MUST UPDATE MPI DATATYPE!
+  !REMEMBER: IF ADDING ANYTHING, MUST UPDATE MPI DATATYPE IN PARTICLE_SETUP!
   type :: particle
     integer :: pidx,procidx,nbr_pidx,nbr_procidx
     real :: vp(3),xp(3),uf(3),xrhs(3),vrhs(3),Tp,Tprhs_s
     real :: Tprhs_L,Tf,radius,radrhs,qinf,qstar,dist
     real :: res,m_s,kappa_s,rc,actres,numact
-    real :: u_sub(3),sigm_s
+    real :: u_sub(3),sigm_s,xpinit(3)
     integer*8 :: mult
     type(particle), pointer :: prev,next
   end type particle
@@ -1689,7 +1689,7 @@ CONTAINS
       include 'mpif.h' 
       integer :: values(8)
       integer :: idx,ierr
-      integer :: N,kk
+      integer :: kk,N
       real :: my_dz
 
       !Create the seed for the random number generator:
@@ -1715,8 +1715,8 @@ CONTAINS
 
               !Divide the total number of particles associated with this processor into N "sheets"
               !The premise for this case is that N particles are initialized in a sheet at a specific height.
-                N = (numpart/nnz)
-                my_dz = zl/nnz
+                N = floor(real(numpart)/real(nnz))
+                my_dz = zl/real(nnz)
                 
                 do kk=1,nnz
                         
@@ -1816,7 +1816,7 @@ CONTAINS
       !Set up MPI datatypes for sending particle information
       !MUST UPDATE IF THINGS ARE ADDED/REMOVED FROM PARTICLE STRUCTURE
 
-      num_reals = 6*3+16
+      num_reals =7*3+16
       num_integers = 4
       num_longs = 3
       
@@ -2130,7 +2130,7 @@ CONTAINS
       end if
 
       pi = 4.0*atan(1.0)
-  
+      part%xpinit(1:3) = xp(1:3) 
       part%xp(1:3) = xp(1:3)
       part%vp(1:3) = vp(1:3)
       part%Tp = Tp
@@ -3817,8 +3817,9 @@ CONTAINS
    part => first_particle
    do while (associated(part))
       
-      if (mod(part%pidx,4000) .eq. 0) then
-          write(ntraj,'(2i,12e15.6)') part%pidx,part%procidx,time,part%xp(1),part%xp(2),part%xp(3),part%vp(1),part%vp(2),part%vp(3),part%uf(1),part%uf(2),part%uf(3)
+      if (mod(part%pidx,100) .eq. 0) then
+          write(ntraj,'(2i,12e15.6)') part%pidx,part%procidx,time,part%xp(1),part%xp(2),part%xp(3),part%vp(1),part%vp(2),part%vp(3), &
+                  part%uf(1),part%uf(2),part%uf(3),part%xpinit(3)
       end if
 
    part => part%next
