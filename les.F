@@ -105,7 +105,15 @@ c
          end if
 
          call particle_setup
-         call particle_init 
+         call particle_init
+                
+c -------------- For this particular case, do an initial write of the
+c ---------------particle trajectory files                 
+         if (inewpart == 8) then
+                if (itrajout) then
+                call particle_write_traj(it)
+                end if
+         end if
          !call read_part_res !comment out usually 
 
 #ifdef TECIO
