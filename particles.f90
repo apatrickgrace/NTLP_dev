@@ -3157,9 +3157,12 @@ CONTAINS
 
         if (it .LE. 1) then
            part%vp(1:3) = part%uf
-           !Do an initial write to the trajectory file so we can save the initial sampled velocities
+           !Do an initial write to the trajectory file. This feels like a hack because we can't call particle_write_traj
            if (itrajout) then 
-           call particle_write_traj(it)
+                if (mod(part%pidx,50) .eq. 0) then
+                        write(ntraj,'(2i,12e15.6)') part%pidx,part%procidx,time,part%xp(1),part%xp(2),part%xp(3),part%vp(1),part%vp(2),part%vp(3), &
+                                part%uf(1),part%uf(2),part%uf(3),part%xpinit(3)
+                end if
            end if 
         end if
 
