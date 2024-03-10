@@ -3157,6 +3157,10 @@ CONTAINS
 
         if (it .LE. 1) then
            part%vp(1:3) = part%uf
+           !Do an initial write to the trajectory file so we can save the initial sampled velocities
+           if (trajout) then 
+           call particle_write_traj(it)
+           end if 
         end if
 
          if (iexner .eq. 1) then
