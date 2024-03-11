@@ -1,0 +1,29 @@
+#!/bin/bash
+
+#$ -M agrace4@nd.edu
+#$ -m n
+#$ -pe mpi-64 128
+#$ -q hpc
+#$ -N correlation_test_St10_no_grav
+#$ -j y
+
+case=correlation_test_St10_no_grav
+time=0000000
+runout=$case.out.$time
+
+datadir=/scratch365/agrace4/correlation/$case
+homedir=~/correlation/$case
+
+cd $homedir
+
+module load mvapich2
+module load intel
+module load netcdf/4.7.4/intel/19.0
+
+imachine=0
+echo $imachine > ./mach.file
+echo $datadir >> ./mach.file
+
+mpirun -n 128 $homedir/../lesmpi.a $homedir/params.in > $datadir/$runout
+
+

@@ -1710,7 +1710,7 @@ CONTAINS
       nullify(part,first_particle)
       
 
-      if (inewpart == 8) then
+      if (inewpart .eq. 8) then
               !Code for particle sheet case goes here
 
               !Divide the total number of particles associated with this processor into N "sheets"
@@ -3157,7 +3157,9 @@ CONTAINS
 
         if (it .LE. 1) then
            part%vp(1:3) = part%uf
-           !Do an initial write to the trajectory file. This feels like a hack because we can't call particle_write_traj
+
+           !Do an initial write to the trajectory file. This is a hack because we can't call particle_write_traj directory
+           !Make sure that if you're changing a column here, you also change it in particle_write_traj()
            if (itrajout) then 
                 if (mod(part%pidx,50) .eq. 0) then
                         write(ntraj,'(2i,12e15.6)') part%pidx,part%procidx,time,part%xp(1),part%xp(2),part%xp(3),part%vp(1),part%vp(2),part%vp(3), &
@@ -3190,9 +3192,14 @@ CONTAINS
         rhop_i = rhop
 
         !implicitly calculates next velocity and position
-        part%xp(1:3) = part%xp(1:3) + dt*part%vp(1:3)
-        part%vp(1:3) = (part%vp(1:3)+taup_i*dt*corrfac*part%uf(1:3)+dt*part_grav(1:3))/(1+dt*corrfac*taup_i)
+        part%xp(1:3) = part%xp(1:3) + dt*part%vp(1:3)       
 
+        !Add an i_inertia flag to turn off inertia
+!        if (i_inertia) then
+!                part%vp(1:3) = part%uf(1:3) - part_grav(1:3)
+!        else
+                part%vp(1:3) = (part%vp(1:3)+taup_i*dt*corrfac*part%uf(1:3)+dt*part_grav(1:3))/(1+dt*corrfac*taup_i)
+!        endif 
 
         ! non-dimensionalizes particle radius and temperature before
         ! iteratively solving for next radius and temperature
@@ -3823,7 +3830,8 @@ CONTAINS
    
    part => first_particle
    do while (associated(part))
-      
+   !If changing particle quantities to write, make sure that they are also changed in particle_update_BE() for the initial write,
+   !after the uf_interp step
       if (mod(part%pidx,50) .eq. 0) then
           write(ntraj,'(2i,12e15.6)') part%pidx,part%procidx,time,part%xp(1),part%xp(2),part%xp(3),part%vp(1),part%vp(2),part%vp(3), &
                   part%uf(1),part%uf(2),part%uf(3),part%xpinit(3)
