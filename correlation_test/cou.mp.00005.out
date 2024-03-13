@@ -1,0 +1,9 @@
+ Number of x-y slab cpus =    16
+ Number of z-level cpus  =     8
+ Total number of cpus    =   128
+ Max-p for index arrays  =   127
+ 7001 gridd nnx =  256 nny =  256 nnz =  256
+ 7002 gridd nnx =  256 nny =  256 nnz =  256
+ 7002 gridd nnx =  256 nny =  256 nnz =  256
+ 9901 z1 =    0.650000E-04 zo =    0.320000E-04
+ zody =    0.708651E+00 zosdy =    0.708651E+00
