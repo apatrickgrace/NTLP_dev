@@ -1,0 +1,6 @@
+correlation_*
+no_grav
+*.o
+*.a
+*.mod
+statstest
