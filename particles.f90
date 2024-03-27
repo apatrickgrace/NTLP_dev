@@ -3160,10 +3160,12 @@ CONTAINS
 
            !Do an initial write to the trajectory file. This is a hack because we can't call particle_write_traj directory
            !Make sure that if you're changing a column here, you also change it in particle_write_traj()
-           if (itrajout) then 
-                if (mod(part%pidx,5) .eq. 0) then
-                        write(ntraj,'(2i,12e15.6)') part%pidx,part%procidx,time,part%xp(1),part%xp(2),part%xp(3),part%vp(1),part%vp(2),part%vp(3), &
-                                part%uf(1),part%uf(2),part%uf(3),part%xpinit(3)
+           if (inewpart == 8) then
+                if (itrajout) then 
+                        if (mod(part%pidx,5) .eq. 0) then
+                                write(ntraj,'(2i,12e15.6)') part%pidx,part%procidx,time,part%xp(1),part%xp(2),part%xp(3),part%vp(1),part%vp(2),part%vp(3), &
+                                        part%uf(1),part%uf(2),part%uf(3),part%xpinit(3)
+                        end if
                 end if
            end if 
         end if
@@ -3195,11 +3197,11 @@ CONTAINS
         part%xp(1:3) = part%xp(1:3) + dt*part%vp(1:3)       
 
         !Add an i_inertia flag to turn off inertia
-!        if (i_inertia) then
-!                part%vp(1:3) = part%uf(1:3) - part_grav(1:3)
-!        else
+        if (i_inertia == 0) then
+                part%vp(1:3) = part%uf(1:3) - part_grav(1:3)
+        else
                 part%vp(1:3) = (part%vp(1:3)+taup_i*dt*corrfac*part%uf(1:3)+dt*part_grav(1:3))/(1+dt*corrfac*taup_i)
-!        endif 
+        endif 
 
         ! non-dimensionalizes particle radius and temperature before
         ! iteratively solving for next radius and temperature
