@@ -10,7 +10,7 @@ c     ----------------------------------------------------------------------
      +     icouple,iTcouple,iHcouple,ievap,ifields,ilin,ineighbor,
      +     icoalesce,ipart_method,ipartdiff,isfs,iexner,ilongwave,
      +     inetcdf,iviznetcdf,ihumiditycontrol,ireintro,itrajout,
-     +     inewpart,ihurr,icase,ikernel
+     +     inewpart,ihurr,icase,ikernel,i_inertia
 
       real :: max_time
 c     
